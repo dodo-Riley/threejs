@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 import * as THREE from 'three';
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import {GeometryService} from "./geometry.service";
 
 @Component({
   selector: 'app-geometry',
@@ -14,7 +14,8 @@ export class GeometryComponent implements OnInit,AfterViewInit {
   public scene:any;
   public camera:any;
   public cube:any;
-  constructor() { }
+  public group = new THREE.Group();
+  constructor( public geo : GeometryService ) { }
 
   ngOnInit(): void {
   }
@@ -28,10 +29,20 @@ export class GeometryComponent implements OnInit,AfterViewInit {
     const scene = new THREE.Scene();
     this.scene = scene;
 
-    this.setupCamera();
-    this.setupLight();
-    this.setupModel();
-    this.setupControls();
+    this.camera = this.geo.setupCamera(this.container);
+    this.geo.setupLight(this.scene);
+    this.setupModelBox();
+    this.setupModelCircle();
+    this.setupModelCone();
+    this.setupModelCylinder();
+    this.setupModelSphere();
+    this.setupModelRing();
+    this.setupModelPlane();
+    this.setupModelTorus();
+    this.setupModelTorusKnot();
+    this.scene.add(this.group);
+    this.cube = this.group;
+    this.geo.setupControls(this.camera,this.container);
 
     window.onresize = this.resize.bind(this);
     this.resize();
@@ -39,23 +50,7 @@ export class GeometryComponent implements OnInit,AfterViewInit {
     requestAnimationFrame(this.render.bind(this));
   }
 
-  setupCamera() {
-    const width = this.container.nativeElement.clientWidth;
-    const height = this.container.nativeElement.clientHeight;
-    const camera = new THREE.PerspectiveCamera(75,width/height,0.1,2000);
-    camera.position.z = 5;
-    this.camera = camera;
-  }
-
-  setupLight() {
-    const color = 0xffffff;
-    const intensity = 1;
-    const light = new THREE.DirectionalLight(color, intensity);
-    light.position.set(-1,2,4);
-    this.scene.add(light);
-  }
-
-  setupModel() {
+  setupModelBox() {
     const geometry = new THREE.BoxGeometry(1,1,1);
     const geometry2 = new THREE.BoxGeometry(1,1,1,2,2,2);
     const fillMaterial = new THREE.MeshPhongMaterial({color:0x515151});
@@ -68,6 +63,39 @@ export class GeometryComponent implements OnInit,AfterViewInit {
     const line3 = new THREE.LineSegments(geometry, lineMaterial);
     const line4 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry2), lineMaterial);
 
+    cube.position.x=-2;
+    line1.position.x=-2;
+
+    line2.position.x=0;
+    line3.position.x=2;
+
+    cube2.position.x=4;
+    line4.position.x=4;
+
+    const subgroup = new THREE.Group();
+    subgroup.add(cube);
+    subgroup.add(cube2);
+    subgroup.add(line1);
+    subgroup.add(line2);
+    subgroup.add(line3);
+    subgroup.add(line4);
+    subgroup.position.y=2;
+
+    this.group.add(subgroup);
+  }
+
+  setupModelCircle() {
+    const geometry = new THREE.CircleGeometry();
+    const geometry2 = new THREE.CircleGeometry(1,20,0,Math.PI/2);
+    const fillMaterial = new THREE.MeshPhongMaterial({color:0x515151});
+    const cube = new THREE.Mesh(geometry, fillMaterial);
+    const cube2 = new THREE.Mesh(geometry2, fillMaterial);
+
+    const lineMaterial = new THREE.LineBasicMaterial({color:0xffff00});
+    const line1 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line2 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line3 = new THREE.LineSegments(geometry, lineMaterial);
+    const line4 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry2), lineMaterial);
 
     cube.position.x=-2;
     line1.position.x=-2;
@@ -75,25 +103,259 @@ export class GeometryComponent implements OnInit,AfterViewInit {
     line2.position.x=0;
     line3.position.x=2;
 
-    cube2.position.x=-2
-    cube2.position.y=-2
-    line4.position.x=-2
-    line4.position.y=-2
+    cube2.position.x=4;
+    line4.position.x=4;
 
-    const group = new THREE.Group();
-    group.add(cube);
-    group.add(cube2);
-    group.add(line1);
-    group.add(line2);
-    group.add(line3);
-    group.add(line4);
+    const subgroup = new THREE.Group();
+    subgroup.add(cube);
+    subgroup.add(cube2);
+    subgroup.add(line1);
+    subgroup.add(line2);
+    subgroup.add(line3);
+    subgroup.add(line4);
+    subgroup.position.y = 0;
 
-    this.scene.add(group);
-    this.cube = group;
+    this.group.add(subgroup);
   }
-  setupControls() {
-    new OrbitControls(this.camera, this.container.nativeElement);
+
+  setupModelCone() {
+    const geometry = new THREE.ConeGeometry();
+    const geometry2 = new THREE.ConeGeometry(1,0.5,20,3,true,0,Math.PI/2*3);
+    const fillMaterial = new THREE.MeshPhongMaterial({color:0x515151});
+    const cube = new THREE.Mesh(geometry, fillMaterial);
+    const cube2 = new THREE.Mesh(geometry2, fillMaterial);
+
+    const lineMaterial = new THREE.LineBasicMaterial({color:0xffff00});
+    const line1 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line2 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line3 = new THREE.LineSegments(geometry, lineMaterial);
+    const line4 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry2), lineMaterial);
+
+    cube.position.x=-2;
+    line1.position.x=-2;
+
+    line2.position.x=0;
+    line3.position.x=2;
+
+    cube2.position.x=4;
+    line4.position.x=4;
+
+    const subgroup = new THREE.Group();
+    subgroup.add(cube);
+    subgroup.add(cube2);
+    subgroup.add(line1);
+    subgroup.add(line2);
+    subgroup.add(line3);
+    subgroup.add(line4);
+    subgroup.position.y = -2;
+
+    this.group.add(subgroup);
   }
+
+  setupModelCylinder() {
+    const geometry = new THREE.CylinderGeometry();
+    const geometry2 = new THREE.CylinderGeometry(0.5,1,0.5,20,3,true,0,Math.PI*2);
+    const fillMaterial = new THREE.MeshPhongMaterial({color:0x515151});
+    const cube = new THREE.Mesh(geometry, fillMaterial);
+    const cube2 = new THREE.Mesh(geometry2, fillMaterial);
+
+    const lineMaterial = new THREE.LineBasicMaterial({color:0xffff00});
+    const line1 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line2 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line3 = new THREE.LineSegments(geometry, lineMaterial);
+    const line4 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry2), lineMaterial);
+
+    cube.position.x=-2;
+    line1.position.x=-2;
+
+    line2.position.x=0;
+    line3.position.x=2;
+
+    cube2.position.x=4;
+    line4.position.x=4;
+
+    const subgroup = new THREE.Group();
+    subgroup.add(cube);
+    subgroup.add(cube2);
+    subgroup.add(line1);
+    subgroup.add(line2);
+    subgroup.add(line3);
+    subgroup.add(line4);
+    subgroup.position.y = 4;
+
+    this.group.add(subgroup);
+  }
+
+  setupModelSphere() {
+    const geometry = new THREE.SphereGeometry();
+    const geometry2 = new THREE.SphereGeometry(0.5,10,3,0,Math.PI,0,Math.PI/2);
+    const fillMaterial = new THREE.MeshPhongMaterial({color:0x515151});
+    const cube = new THREE.Mesh(geometry, fillMaterial);
+    const cube2 = new THREE.Mesh(geometry2, fillMaterial);
+
+    const lineMaterial = new THREE.LineBasicMaterial({color:0xffff00});
+    const line1 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line2 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line3 = new THREE.LineSegments(geometry, lineMaterial);
+    const line4 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry2), lineMaterial);
+
+    cube.position.x=-2;
+    line1.position.x=-2;
+
+    line2.position.x=0;
+    line3.position.x=2;
+
+    cube2.position.x=4;
+    line4.position.x=4;
+
+    const subgroup = new THREE.Group();
+    subgroup.add(cube);
+    subgroup.add(cube2);
+    subgroup.add(line1);
+    subgroup.add(line2);
+    subgroup.add(line3);
+    subgroup.add(line4);
+    subgroup.position.y = -4;
+
+    this.group.add(subgroup);
+  }
+
+  setupModelRing() {
+    const geometry = new THREE.RingGeometry();
+    const geometry2 = new THREE.RingGeometry(0.2,1,20,5,0,Math.PI);
+    const fillMaterial = new THREE.MeshPhongMaterial({color:0x515151});
+    const cube = new THREE.Mesh(geometry, fillMaterial);
+    const cube2 = new THREE.Mesh(geometry2, fillMaterial);
+
+    const lineMaterial = new THREE.LineBasicMaterial({color:0xffff00});
+    const line1 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line2 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line3 = new THREE.LineSegments(geometry, lineMaterial);
+    const line4 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry2), lineMaterial);
+
+    cube.position.x=-2;
+    line1.position.x=-2;
+
+    line2.position.x=0;
+    line3.position.x=2;
+
+    cube2.position.x=4;
+    line4.position.x=4;
+
+    const subgroup = new THREE.Group();
+    subgroup.add(cube);
+    subgroup.add(cube2);
+    subgroup.add(line1);
+    subgroup.add(line2);
+    subgroup.add(line3);
+    subgroup.add(line4);
+    subgroup.position.y = 6;
+
+    this.group.add(subgroup);
+  }
+
+  setupModelPlane() {
+    const geometry = new THREE.PlaneGeometry();
+    const geometry2 = new THREE.PlaneGeometry(0.5,0.8,10,5);
+    const fillMaterial = new THREE.MeshPhongMaterial({color:0x515151});
+    const cube = new THREE.Mesh(geometry, fillMaterial);
+    const cube2 = new THREE.Mesh(geometry2, fillMaterial);
+
+    const lineMaterial = new THREE.LineBasicMaterial({color:0xffff00});
+    const line1 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line2 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line3 = new THREE.LineSegments(geometry, lineMaterial);
+    const line4 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry2), lineMaterial);
+
+    cube.position.x=-2;
+    line1.position.x=-2;
+
+    line2.position.x=0;
+    line3.position.x=2;
+
+    cube2.position.x=4;
+    line4.position.x=4;
+
+    const subgroup = new THREE.Group();
+    subgroup.add(cube);
+    subgroup.add(cube2);
+    subgroup.add(line1);
+    subgroup.add(line2);
+    subgroup.add(line3);
+    subgroup.add(line4);
+    subgroup.position.y = -6;
+
+    this.group.add(subgroup);
+  }
+
+  setupModelTorus() {
+    const geometry = new THREE.TorusGeometry();
+    const geometry2 = new THREE.TorusGeometry(0.5,0.2,20,10, Math.PI);
+    const fillMaterial = new THREE.MeshPhongMaterial({color:0x515151});
+    const cube = new THREE.Mesh(geometry, fillMaterial);
+    const cube2 = new THREE.Mesh(geometry2, fillMaterial);
+
+    const lineMaterial = new THREE.LineBasicMaterial({color:0xffff00});
+    const line1 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line2 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line3 = new THREE.LineSegments(geometry, lineMaterial);
+    const line4 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry2), lineMaterial);
+
+    cube.position.x=-2;
+    line1.position.x=-2;
+
+    line2.position.x=0;
+    line3.position.x=2;
+
+    cube2.position.x=4;
+    line4.position.x=4;
+
+    const subgroup = new THREE.Group();
+    subgroup.add(cube);
+    subgroup.add(cube2);
+    subgroup.add(line1);
+    subgroup.add(line2);
+    subgroup.add(line3);
+    subgroup.add(line4);
+    subgroup.position.y = 8;
+
+    this.group.add(subgroup);
+  }
+
+  setupModelTorusKnot() {
+    const geometry = new THREE.TorusKnotGeometry();
+    const geometry2 = new THREE.TorusKnotGeometry(0.5,0.2,20,10,3,5);
+    const fillMaterial = new THREE.MeshPhongMaterial({color:0x515151});
+    const cube = new THREE.Mesh(geometry, fillMaterial);
+    const cube2 = new THREE.Mesh(geometry2, fillMaterial);
+
+    const lineMaterial = new THREE.LineBasicMaterial({color:0xffff00});
+    const line1 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line2 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+    const line3 = new THREE.LineSegments(geometry, lineMaterial);
+    const line4 = new THREE.LineSegments(new THREE.WireframeGeometry(geometry2), lineMaterial);
+
+    cube.position.x=-2;
+    line1.position.x=-2;
+
+    line2.position.x=0;
+    line3.position.x=2;
+
+    cube2.position.x=4;
+    line4.position.x=4;
+
+    const subgroup = new THREE.Group();
+    subgroup.add(cube);
+    subgroup.add(cube2);
+    subgroup.add(line1);
+    subgroup.add(line2);
+    subgroup.add(line3);
+    subgroup.add(line4);
+    subgroup.position.y = -8;
+
+    this.group.add(subgroup);
+  }
+
   resize() {
     const width = this.container.nativeElement.clientWidth;
     const height = this.container.nativeElement.clientHeight;
