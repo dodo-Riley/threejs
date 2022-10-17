@@ -1,6 +1,8 @@
 import {Component, OnInit, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 import * as THREE from 'three';
 import {GeometryService} from "./geometry.service";
+import {FontLoader} from "three/examples/jsm/loaders/FontLoader";
+import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry";
 
 @Component({
   selector: 'app-geometry2',
@@ -16,6 +18,7 @@ export class Geometry2Component implements OnInit,AfterViewInit {
   public cube:any;
   public group = new THREE.Group();
   public scale:number;
+  public font:any;
   constructor( public geo : GeometryService ) { }
 
   ngOnInit(): void {
@@ -40,6 +43,7 @@ export class Geometry2Component implements OnInit,AfterViewInit {
     this.setupModelLineForLathe();
     this.setupModelLathe();
     this.setupModelExtrude();
+    this.setupModelFont();
     this.scene.add(this.group);
     this.cube = this.group;
     this.geo.setupControls(this.camera,this.container);
@@ -260,6 +264,37 @@ export class Geometry2Component implements OnInit,AfterViewInit {
     subgroup.position.x = 30;
 
     this.group.add(subgroup);
+  }
+
+  setupModelFont() {
+    const loader = new FontLoader();
+    loader.load('/assets/NotoSansKRRegular.json', (font) => {
+      debugger;
+      const geometry = new TextGeometry('가', {
+        font: font,
+        size:10,
+        height:1.5,
+        curveSegments:4,
+        bevelEnabled:true,
+        bevelThickness:0.7,
+        bevelSize:0.7,
+        bevelSegments:2
+      })
+      const fillMaterial = new THREE.MeshPhongMaterial({color:0x515151});
+      const cube = new THREE.Mesh(geometry, fillMaterial);
+
+      const lineMaterial = new THREE.LineBasicMaterial({color:0xffff00});
+      const line = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), lineMaterial);
+
+      const subgroup = new THREE.Group();
+      subgroup.add(cube);
+      subgroup.add(line);
+      subgroup.position.y = 15;
+
+      this.group.add(subgroup);
+    })
+
+
   }
 
   resize() {
