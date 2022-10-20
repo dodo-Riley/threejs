@@ -7,6 +7,7 @@ import {GeometryComponent} from './basic/geometry/geometry.component';
 import {Geometry2Component} from './basic/geometry/geometry2.component';
 import { ScenegraphComponent } from './basic/scenegraph/scenegraph/scenegraph.component';
 import { MaterialComponent } from './basic/material/material.component';
+import {Material2Component} from "./basic/material/material2.component";
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { MaterialComponent } from './basic/material/material.component';
     GeometryComponent,
     Geometry2Component,
     ScenegraphComponent,
-    MaterialComponent
+    MaterialComponent,
+    Material2Component
   ],
   imports: [
     BrowserModule

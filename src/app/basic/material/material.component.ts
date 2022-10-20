@@ -9,6 +9,7 @@ import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 })
 export class MaterialComponent implements OnInit {
   @ViewChild('container') container: ElementRef;
+  public title = 'Material_Points,Line'
   public renderer:any;
   public scene:any;
   public camera:any;
